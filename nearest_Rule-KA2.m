@@ -1,4 +1,4 @@
-function results = nearest_Rule-KA2(xb,M,N)
+function results = nearest_Rule_KA2(xb,M,N)
 %% inputs
 % xb = bayer layer 
 % M,N = desired dimensions of the output image
