@@ -21,8 +21,8 @@ results = zeros(Mo,No,3);
 xb = padarray(xb,[1 1],'symmetric','both');
 
 % b_y = Mo/M and b_x = No/N
-b_y = 1;
-b_x = 1;
+b_y = M/Mo;
+b_x = N/No;
 
 %% Bayer Pattern
 % what about if we want to implement another bayer pattern,
@@ -73,5 +73,19 @@ results(li(1):2:li(2),lj(1):2:lj(2),1) = xb(li(1)+1:2:li(2)+1,lj(1):2:lj(2)); %r
 results(li(1):2:li(2),lj(1):2:lj(2),2) = xb(li(1):2:li(2),lj(1):2:lj(2));
 results(li(1):2:li(2),lj(1):2:lj(2),3) = xb(li(1):2:li(2),lj(1)-1:2:lj(2)-1);
 
-end
+grid_x = linspace(1,No,N);
+grid_y = linspace(1,Mo,M);
+grid_x = floor(grid_x);
+grid_y = floor(grid_y);
 
+finalres = zeros(M,N,3);
+for i=1:b_y:M
+    for j=1:b_x:N
+        finalres(i:i+b_y,j:j+b_x,1) = results(grid_y(i),grid_x(i),1);
+        finalres(i:i+b_y,j:j+b_x,2) = results(grid_y(i),grid_x(i),2);
+        finalres(i:i+b_y,j:j+b_x,3) = results(grid_y(i),grid_x(i),3);
+    end
+end
+results = finalres;
+
+end
