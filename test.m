@@ -9,7 +9,7 @@ N = N/2;
 im = nearest_Rule_KA1(xb,M,N);
 figure
 imshow(im)
-title('rule KA1 , rgb dimensions == bayer layer dimensions')
+title('rule KA1 , rgb dimensions == bayer layer dimensions / 2 ')
 
 %% use nearest method as sampling method and show image
 M = 4*M;
