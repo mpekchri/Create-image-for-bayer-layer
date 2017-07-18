@@ -5,7 +5,9 @@ function results = nearest_Rule_KA2(xb,M,N)
 % M = number of rows , N = number of columns
 %% outputs
 % results = rgb image with M rows and N columns
-results = zeros(M,N,3);
+Mo = size(xb,1);
+No = size(xb,2);
+results = zeros(Mo,No,3);
 
 %% Additional informations
 % according to the inputs , we will create the result by applying nearest algorithm
@@ -16,8 +18,7 @@ results = zeros(M,N,3);
 % we set the indexes the way that rule [KA2] (mentioned in nearest_Rule-KA2.pdf) describes them .
 % In order to avoid exceeding xb dimensions we apply padding to xb
 % so the final indexes will be I=I+1 , J = J+1
-x = padarray(xb,[1 1],'symmetric','both');
-
+xb = padarray(xb,[1 1],'symmetric','both');
 
 %% Bayer Pattern
 % what about if we want to implement another bayer pattern,
@@ -31,61 +32,74 @@ w = [0 0];
 wj = w(2);
 wi = w(1);
 
+
+%% case green - case g1
+lj = [1 No-1];
+li = [1 Mo-1];
+lj = lj+1+wj;
+li = li+1+wi;
+
+results(li(1):2:li(2),lj(1):2:lj(2),1) = xb(li(1):2:li(2),lj(1)+1:2:lj(2)+1);%red
+results(li(1):2:li(2),lj(1):2:lj(2),2) = xb(li(1):2:li(2),lj(1):2:lj(2)); %green
+results(li(1):2:li(2),lj(1):2:lj(2),3) = xb(li(1)+1:2:li(2)+1,lj(1):2:lj(2)); %blue
+
+%% case red
+lj = [2 No];
+li = [1 Mo-1];
+lj = lj+1+wj;
+li = li+1+wi;
+results(li(1):2:li(2),lj(1):2:lj(2),1) = xb(li(1):2:li(2),lj(1):2:lj(2)); %red
+results(li(1):2:li(2),lj(1):2:lj(2),2) = xb(li(1)+1:2:li(2)+1,lj(1):2:lj(2));
+results(li(1):2:li(2),lj(1):2:lj(2),3) = xb(li(1)+1:2:li(2)+1,lj(1)-1:2:lj(2)-1);
+
+%% case blue
+lj = [1 No-1];
+li = [2 Mo];
+lj = lj+1+wj;
+li = li+1+wi;
+results(li(1):2:li(2),lj(1):2:lj(2),1) = xb(li(1)+1:2:li(2)+1,lj(1)+1:2:lj(2)+1); %red
+results(li(1):2:li(2),lj(1):2:lj(2),2) = xb(li(1)+1:2:li(2)+1,lj(1):2:lj(2));
+results(li(1):2:li(2),lj(1):2:lj(2),3) = xb(li(1):2:li(2),lj(1):2:lj(2));
+
+%% case green -case g2
+lj = [2 No];
+li = [2 Mo];
+lj = lj+1+wj;
+li = li+1+wi;
+results(li(1):2:li(2),lj(1):2:lj(2),1) = xb(li(1)+1:2:li(2)+1,lj(1):2:lj(2)); %red
+results(li(1):2:li(2),lj(1):2:lj(2),2) = xb(li(1):2:li(2),lj(1):2:lj(2));
+results(li(1):2:li(2),lj(1):2:lj(2),3) = xb(li(1):2:li(2),lj(1)-1:2:lj(2)-1);
+
+
 % b_y = Mo/M and b_x = No/N
-b_y = size(xb,1)/M;
-b_x = size(xb,2)/N;
-
-%% case i<M/2 , j<N/2
-% i for y, j for x
-% lj = [j_start j_end];
-% li = [i_start -i_end];
-% case green  - ONLY 
-lj = [1 N/2];
-li = [1 M/2];
-lI = (li-1).*b_y+1;
-lJ = (lj-1).*b_x+1;
-lI = lI+1+wi;
-lJ = lJ+1+wj;
-
-results(li(1):1:li(2),lj(1):1:lj(2),1) = x(lI(1):b_y:lI(2),lJ(1)+1:b_x:lJ(2)+1);
-results(li(1):1:li(2),lj(1):1:lj(2),2) = x(lI(1):b_y:lI(2),lJ(1):b_x:lJ(2));
-results(li(1):1:li(2),lj(1):1:lj(2),3) = x(lI(1)-1:b_y:lI(2)-1,lJ(1):b_x:lJ(2));
-
-%% case i>M/2 , j<N/2
-lj = [1 N/2];
-li = [M/2+1 M];
-lI = li.*b_y;
-lJ = (lj-1).*b_x+1;
-lI = lI+1+wi;
-lJ = lJ+1+wj;
-
-results(li(1):1:li(2),lj(1):1:lj(2),1) = x(lI(1)-1:b_y:lI(2)-1,lJ(1)-1:b_x:lJ(2)-1);
-results(li(1):1:li(2),lj(1):1:lj(2),2) = x(lI(1)-1:b_y:lI(2)-1,lJ(1):b_x:lJ(2));
-results(li(1):1:li(2),lj(1):1:lj(2),3) = x(lI(1):b_y:lI(2),lJ(1):b_x:lJ(2));
-
-%% case i<M/2 , j>N/2
-lj = [N/2+1 N];
-li = [1 M/2];
-lI = (li-1).*b_y+1;
-lJ = lj.*b_x;
-lI = lI+1+wi;
-lJ = lJ+1+wj;
-
-results(li(1):1:li(2),lj(1):1:lj(2),1) = x(lI(1):b_y:lI(2),lJ(1):b_x:lJ(2));
-results(li(1):1:li(2),lj(1):1:lj(2),2) = x(lI(1)-1:b_y:lI(2)-1,lJ(1):b_x:lJ(2));
-results(li(1):1:li(2),lj(1):1:lj(2),3) = x(lI(1)-1:b_y:lI(2)-1,lJ(1)-1:b_x:lJ(2)-1);
-
-%% case i>M/2 , j>N/2
-lj = [N/2+1 N];
-li = [M/2+1 M];
-lI = li.*b_y;
-lJ = lj.*b_x;
-lI = lI+1+wi;
-lJ = lJ+1+wj;
-
-results(li(1):1:li(2),lj(1):1:lj(2),1) = x(lI(1)-1:b_y:lI(2)-1,lJ(1):b_x:lJ(2));
-results(li(1):1:li(2),lj(1):1:lj(2),2) = x(lI(1):b_y:lI(2),lJ(1):b_x:lJ(2));
-results(li(1):1:li(2),lj(1):1:lj(2),3) = x(lI(1):b_y:lI(2),lJ(1)-1:b_x:lJ(2)-1);
-
+if(M>Mo)
+	b_y = M/Mo;
+else
+	b_y = Mo/M;
+end
+if(N>No)
+	b_x = N/No;
+else
+	b_x = No/N;
 end
 
+%% compute sampling grid according to desired dimensions
+% no need for these computations if Mo == M %% No == N
+if(Mo ~= M || No ~= N)
+    temp = results;
+    results = zeros(M,N,3);
+    grid_y = linspace(1,Mo,M);
+    grid_x = linspace(1,No,N);
+    grid_y = floor(grid_y);
+    grid_x = floor(grid_x);
+    for i=1:b_y:M
+        for j=1:b_x:N
+            results(i:i+b_y,j:j+b_x,1) = temp(grid_y(i),grid_x(j),1);
+            results(i:i+b_y,j:j+b_x,2) = temp(grid_y(i),grid_x(j),2);
+            results(i:i+b_y,j:j+b_x,3) = temp(grid_y(i),grid_x(j),3);
+        end
+    end
+end
+
+
+end
